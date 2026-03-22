@@ -380,7 +380,7 @@ let saveTimer = null;   // debounce timer for auto-save
 
 // ── Sign In ──────────────────────────────────────────────────────
 function driveSignIn() {
-  if (GDRIVE_CLIENT_ID === '320008751761-e14mvte8m8iqiaq24tvp1fmnrfsaioi0.apps.googleusercontent.com') {
+  if (GDRIVE_CLIENT_ID === 'SETUP_NOT_COMPLETE') {
     showSetupModal();
     return;
   }
@@ -438,7 +438,7 @@ function driveSignOut() {
 
 // ── Restore session on page load ─────────────────────────────────
 async function driveRestoreSession() {
-  if (GDRIVE_CLIENT_ID === '320008751761-e14mvte8m8iqiaq24tvp1fmnrfsaioi0.apps.googleusercontent.com') return;
+  if (GDRIVE_CLIENT_ID === 'SETUP_NOT_COMPLETE') return;
   const token   = localStorage.getItem('vf_gdrive_token');
   const expiry  = parseInt(localStorage.getItem('vf_gdrive_expiry') || '0');
   const user    = localStorage.getItem('vf_gdrive_user');
