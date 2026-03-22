@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌿 Vela Farms — Kitchen Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#1A4A30;--green:#1F7A4A;--sage:#4E8B68;--mint:#A8D5B5;
+  --cream:#F7F4EE;--parchment:#EDE8DC;--sand:#D9D0BF;
+  --ink:#1C1C1C;--muted:#6B6B5E;
+  --red:#B83232;--red-lite:#FAEAEA;
+  --amber:#9A5A0A;--amber-lite:#FDF3E0;
+  --blue:#1A4E85;--blue-lite:#E5EEF9;
+  --border:#D8D2C5;--white:#FFFFFF;
+  --font:'Instrument Sans',sans-serif;
+  --display:'Syne',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --r:10px;--shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--cream);color:var(--ink);font-size:14px;min-height:100vh}
+
+/* HEADER */
+.hdr{background:var(--forest);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.2)}
+.logo{font-family:var(--display);font-size:17px;font-weight:800;color:white;display:flex;align-items:center;gap:10px}
+.logo-sep{width:1px;height:24px;background:rgba(255,255,255,.15);margin:0 4px}
+.hdr-sub{font-size:11px;color:var(--mint);line-height:1.4}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.save-pill{font-size:11px;background:rgba(168,213,181,.2);color:var(--mint);padding:3px 10px;border-radius:20px;opacity:0;transition:opacity .3s}
+.save-pill.show{opacity:1}
+
+/* DRIVE BAR */
+.drive-bar{background:#0f3522;border-top:1px solid rgba(255,255,255,.08);padding:9px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.drive-bar-label{font-size:11px;color:var(--mint);font-weight:600;flex-shrink:0}
+.drive-btn{font-family:var(--font);font-size:11px;font-weight:600;padding:5px 14px;border-radius:6px;border:none;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px}
+.drive-btn-primary{background:#4285F4;color:white}.drive-btn-primary:hover{background:#3367D6}
+.drive-btn-sec{background:rgba(255,255,255,.12);color:white;border:1px solid rgba(255,255,255,.2)}.drive-btn-sec:hover{background:rgba(255,255,255,.2)}
+.drive-btn-ghost{background:transparent;color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.12);font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;font-family:var(--font);font-weight:600}.drive-btn-ghost:hover{color:white;border-color:rgba(255,255,255,.3)}
+.drive-status{font-size:11px;color:rgba(255,255,255,.45);font-style:italic;margin-left:auto}
+
+/* TABS */
+.tab-bar{background:white;border-bottom:2px solid var(--border);display:flex;padding:0 24px;overflow-x:auto;gap:2px;position:sticky;top:56px;z-index:100}
+.tab{font-family:var(--font);font-size:12px;font-weight:500;padding:12px 15px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .15s}
+.tab:hover{color:var(--green)}.tab.active{color:var(--forest);border-bottom-color:var(--green);font-weight:600}
+
+/* PANELS */
+.panel{display:none;padding:22px 24px;max-width:1200px;margin:0 auto}
+.panel.active{display:block;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION LABEL */
+.sec{font-family:var(--display);font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* CARD */
+.card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);margin-bottom:10px}
+
+/* BUTTONS */
+.btn{font-family:var(--font);font-size:12px;font-weight:600;padding:7px 16px;border-radius:7px;border:none;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.btn-primary{background:var(--forest);color:white}.btn-primary:hover{background:var(--green)}
+.btn-sec{background:var(--parchment);color:var(--ink);border:1px solid var(--border)}.btn-sec:hover{background:var(--sand)}
+.btn-danger{background:var(--red-lite);color:var(--red);border:1px solid rgba(184,50,50,.2)}.btn-danger:hover{background:#f9d5d5}
+.btn-sm{font-size:11px;padding:4px 10px;border-radius:5px}
+
+/* FORMS */
+.form-group{margin-bottom:14px}
+.form-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:5px}
+.form-input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:7px;font-family:var(--font);font-size:13px;background:white;color:var(--ink);transition:border-color .15s}
+.form-input:focus{outline:none;border-color:var(--green)}
+.form-select{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:7px;font-family:var(--font);font-size:13px;background:white;color:var(--ink);cursor:pointer}
+.form-select:focus{outline:none;border-color:var(--green)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.form-hint{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{padding:9px 12px;text-align:left;font-weight:600;background:var(--parchment);font-family:var(--display);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--border)}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(168,213,181,.05)}
+.tbl-actions{display:flex;gap:5px;justify-content:flex-end}
+
+/* BADGE */
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
+.badge-green{background:var(--mint);color:var(--forest)}
+.badge-amber{background:var(--amber-lite);color:var(--amber)}
+.badge-red{background:var(--red-lite);color:var(--red)}
+.badge-blue{background:var(--blue-lite);color:var(--blue)}
+.badge-gray{background:var(--parchment);color:var(--muted)}
+
+/* CALLOUT */
+.cl{border-radius:7px;padding:10px 14px;font-size:12px;margin:8px 0;font-weight:500;line-height:1.5}
+.cl-teal{background:rgba(31,122,74,.07);color:var(--forest);border:1px solid rgba(31,122,74,.18)}
+.cl-amber{background:var(--amber-lite);color:var(--amber);border:1px solid rgba(154,90,10,.2)}
+.cl-red{background:var(--red-lite);color:var(--red);border:1px solid rgba(184,50,50,.2)}
+
+/* KPI STRIP */
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:16px}
+.kpi{background:white;border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--mint));border-radius:var(--r) var(--r) 0 0}
+.kpi-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.kpi-val{font-family:var(--mono);font-size:20px;font-weight:600;line-height:1;color:var(--ink)}
+.kpi-val.g{color:var(--green)}.kpi-val.r{color:var(--red)}.kpi-val.a{color:var(--amber)}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* MODAL */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:flex-start;justify-content:center;padding-top:60px;overflow-y:auto}
+.modal-ov.open{display:flex}
+.modal{background:white;border-radius:14px;padding:28px;width:95%;max-width:600px;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative;margin-bottom:40px}
+.modal h2{font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:16px;color:var(--forest)}
+.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1}.modal-close:hover{color:var(--ink)}
+.modal-footer{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+
+/* PRODUCTION PLANNER */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.prod-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow)}
+.prod-card-name{font-size:13px;font-weight:600;margin-bottom:3px}
+.prod-card-line{font-size:11px;color:var(--muted);margin-bottom:10px}
+.prod-card-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;font-size:12px}
+.qty-input{width:70px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:var(--mono);font-size:14px;font-weight:600;text-align:center;background:white}
+.qty-input:focus{outline:none;border-color:var(--green)}
+.qty-btn{width:28px;height:28px;border:1px solid var(--border);border-radius:5px;background:var(--parchment);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;font-weight:600;transition:all .1s;flex-shrink:0}
+.qty-btn:hover{background:var(--mint);border-color:var(--green)}
+
+/* SHOPPING LIST */
+.shop-section{margin-bottom:16px}
+.shop-item{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;border-radius:6px;font-size:13px;margin-bottom:3px}
+.shop-item:nth-child(odd){background:var(--parchment)}
+.shop-item:nth-child(even){background:white;border:1px solid var(--border)}
+.shop-total{background:var(--forest);color:white;border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:600;margin-top:10px}
+
+/* RECIPE INGREDIENT ROW */
+.ing-row{display:grid;grid-template-columns:1fr 80px 100px 28px;gap:8px;align-items:center;margin-bottom:6px}
+.ing-row select,.ing-row input{padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-family:var(--font);font-size:12px}
+.ing-row select:focus,.ing-row input:focus{outline:none;border-color:var(--green)}
+
+/* STEP ROW */
+.step-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}
+.step-num{background:var(--forest);color:white;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:6px;font-family:var(--display)}
+.step-row textarea{flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-family:var(--font);font-size:12px;resize:vertical;min-height:36px}
+.step-row textarea:focus{outline:none;border-color:var(--green)}
+
+/* COGS COLOR CODING */
+.cogs-great{color:var(--green);font-weight:700}
+.cogs-ok{color:var(--amber);font-weight:600}
+.cogs-high{color:var(--red);font-weight:700}
+
+/* PRINT */
+@media print{
+  .hdr,.drive-bar,.tab-bar,.btn,.tbl-actions,.modal-ov{display:none!important}
+  .panel{display:block!important;padding:0}
+  body{background:white}
+}
+
+/* SETUP STEPS */
+.hstep{display:flex;gap:12px;margin-bottom:13px;align-items:flex-start}
+.hnum{background:var(--forest);color:white;font-family:var(--display);font-weight:700;font-size:13px;width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.htxt{font-size:13px;line-height:1.6}
+.htxt strong{color:var(--forest)}
+code{background:var(--parchment);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:12px}
+
+@media(max-width:600px){
+  .panel{padding:14px}
+  .form-row,.form-row-3{grid-template-columns:1fr}
+  .kpi-strip{grid-template-columns:1fr 1fr}
+  .prod-grid{grid-template-columns:1fr}
+  .ing-row{grid-template-columns:1fr 70px 80px 28px}
+}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--parchment)}
+::-webkit-scrollbar-thumb{background:var(--sand);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="logo">🌿 Vela Farms <span class="logo-sep"></span></div>
+    <div class="hdr-sub">Kitchen Planner · Recipe Costing · Production Scheduling</div>
+  </div>
+  <div class="hdr-right">
+    <span class="save-pill" id="si">✓ Saved</span>
+  </div>
+</div>
+
+<!-- GOOGLE DRIVE SYNC BAR -->
+<div class="drive-bar">
+  <span class="drive-bar-label">☁️ Google Drive Sync:</span>
+  <div id="driveSignedOut" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <button class="drive-btn drive-btn-primary" onclick="driveSignIn()">🔑 Sign in with Google to Auto-Sync</button>
+    <span style="font-size:11px;color:rgba(255,255,255,.4)">Sign in once — saves automatically on every device</span>
+  </div>
+  <div id="driveSignedIn" style="display:none;align-items:center;gap:8px;flex-wrap:wrap">
+    <span id="driveUserName" style="font-size:11px;color:var(--mint);font-weight:600"></span>
+    <button class="drive-btn drive-btn-primary" onclick="driveSave(true)">💾 Save Now</button>
+    <button class="drive-btn drive-btn-sec" onclick="driveLoad(true)">🔄 Load Latest</button>
+    <button class="drive-btn drive-btn-sec" onclick="driveSignOut()" style="opacity:.6">Sign Out</button>
+    <span class="drive-status" id="driveStatus">Ready</span>
+  </div>
+  <button class="drive-btn-ghost" onclick="confirmReset()" style="margin-left:auto">↺ Reset</button>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <div class="tab active" onclick="showTab('ingredients',this)">🧂 Ingredients</div>
+  <div class="tab" onclick="showTab('packaging',this)">📦 Packaging</div>
+  <div class="tab" onclick="showTab('recipes',this)">📋 Recipes</div>
+  <div class="tab" onclick="showTab('products',this)">🏷️ Products</div>
+  <div class="tab" onclick="showTab('planner',this)">🗓️ Production Planner</div>
+</div>
+
+<!-- ═══════════ INGREDIENTS ═══════════ -->
+<div class="panel active" id="ingredients">
+  <div class="cl cl-teal">Enter your ingredients once — every recipe and product will use these costs automatically. Cost per unit is what matters.</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <div class="sec" style="margin:0;flex:1">Ingredient Master List</div>
+    <button class="btn btn-primary btn-sm" onclick="openIngModal()" style="margin-left:12px">+ Add Ingredient</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl">
+      <thead><tr>
+        <th>Ingredient</th><th>Unit</th><th>Cost / Unit</th><th>Cook Loss</th><th>Category</th><th>Supplier</th><th></th>
+      </tr></thead>
+      <tbody id="ingTable"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted);font-style:italic">No ingredients yet — click + Add Ingredient to get started</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ PACKAGING ═══════════ -->
+<div class="panel" id="packaging">
+  <div class="cl cl-teal">Add containers, lids, and labels. These costs will be included in your product COGS automatically.</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <div class="sec" style="margin:0;flex:1">Packaging Master List</div>
+    <button class="btn btn-primary btn-sm" onclick="openPkgModal()" style="margin-left:12px">+ Add Packaging</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl">
+      <thead><tr>
+        <th>Name</th><th>Type</th><th>Size / Description</th><th>Cost Each</th><th>Supplier</th><th></th>
+      </tr></thead>
+      <tbody id="pkgTable"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted);font-style:italic">No packaging yet — click + Add Packaging</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ RECIPES ═══════════ -->
+<div class="panel" id="recipes">
+  <div class="cl cl-teal">Build your recipes here. Each recipe calculates its own cost per unit automatically from your ingredient prices.</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <div class="sec" style="margin:0;flex:1">Recipe Library</div>
+    <button class="btn btn-primary btn-sm" onclick="openRecipeModal()" style="margin-left:12px">+ Add Recipe</button>
+  </div>
+  <div id="recipeCards">
+    <div style="text-align:center;padding:40px;color:var(--muted);font-style:italic;background:white;border:1px solid var(--border);border-radius:var(--r)">No recipes yet — click + Add Recipe to build your first one</div>
+  </div>
+</div>
+
+<!-- ═══════════ PRODUCTS ═══════════ -->
+<div class="panel" id="products">
+  <div class="cl cl-teal">Products link a recipe to a sale price. COGS% = total cost ÷ sale price. Target: under 35% for meals.</div>
+  <div id="productKpis" class="kpi-strip"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px">
+    <div class="sec" style="margin:0;flex:1">Product List</div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <select id="productSort" onchange="renderProducts()" class="form-select" style="width:auto;font-size:11px;padding:4px 8px">
+        <option value="line">Sort by Line</option>
+        <option value="cogs_asc">COGS % Low→High</option>
+        <option value="cogs_desc">COGS % High→Low</option>
+        <option value="profit_desc">Profit $ High→Low</option>
+        <option value="name">Name A→Z</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="openProductModal()">+ Add Product</button>
+    </div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl">
+      <thead><tr>
+        <th>Product</th><th>Line</th><th>Recipe</th><th>Sale Price</th><th>Total Cost</th><th>Profit $</th><th>COGS %</th><th>Shelf Life</th><th></th>
+      </tr></thead>
+      <tbody id="productTable"><tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted);font-style:italic">No products yet — add recipes first, then add products here</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ PRODUCTION PLANNER ═══════════ -->
+<div class="panel" id="planner">
+  <div class="cl cl-teal">Enter how many units to make this week. The shopping list and total production cost calculate automatically.</div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+    <input type="text" id="plannerWeek" placeholder="Week of: e.g. March 24, 2026" class="form-input" style="max-width:240px">
+    <button class="btn btn-sec btn-sm" onclick="clearPlanner()">Clear All</button>
+    <button class="btn btn-primary btn-sm" onclick="printPlanner()">🖨 Print Schedule</button>
+  </div>
+
+  <div id="plannerKpis" class="kpi-strip"></div>
+
+  <div class="sec">Production quantities — enter units to make</div>
+  <div class="prod-grid" id="plannerCards">
+    <div style="text-align:center;padding:40px;color:var(--muted);font-style:italic;background:white;border:1px solid var(--border);border-radius:var(--r);grid-column:1/-1">Add products first — they'll appear here for scheduling</div>
+  </div>
+
+  <div class="sec">🛒 Shopping List & Cost Summary</div>
+  <div id="shoppingList">
+    <div style="text-align:center;padding:30px;color:var(--muted);font-style:italic;background:white;border:1px solid var(--border);border-radius:var(--r)">Set production quantities above to generate your shopping list</div>
+  </div>
+</div>
+
+<!-- ═══════════ INGREDIENT MODAL ═══════════ -->
+<div class="modal-ov" id="ingModal">
+<div class="modal">
+  <button class="modal-close" onclick="closeModal('ingModal')">×</button>
+  <h2 id="ingModalTitle">Add Ingredient</h2>
+  <input type="hidden" id="ingEditId">
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Ingredient Name *</label>
+      <input type="text" id="ingName" class="form-input" placeholder="e.g. Ground Beef">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <input type="text" id="ingCat" class="form-input" placeholder="e.g. Meat, Produce, Dairy">
+    </div>
+  </div>
+  <div class="form-row-3">
+    <div class="form-group">
+      <label class="form-label">Unit *</label>
+      <select id="ingUnit" class="form-select">
+        <option value="lb">lb</option><option value="oz">oz</option><option value="kg">kg</option><option value="g">g</option>
+        <option value="gal">gallon</option><option value="qt">quart</option><option value="cup">cup</option><option value="fl oz">fl oz</option>
+        <option value="tsp">tsp</option><option value="tbsp">tbsp</option><option value="ml">ml</option>
+        <option value="each">each</option><option value="dozen">dozen</option><option value="bag">bag</option><option value="can">can</option><option value="case">case</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Cost per Unit ($) *</label>
+      <input type="number" id="ingCost" class="form-input" placeholder="0.00" step="0.001" min="0">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Supplier</label>
+      <input type="text" id="ingSupplier" class="form-input" placeholder="e.g. Labatt, HEB">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Cook Loss % <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+      <input type="number" id="ingCookLoss" class="form-input" placeholder="e.g. 25 means 25% shrinkage" min="0" max="99">
+      <div class="form-hint">Enter % lost during cooking. E.g. 25 = 1 lb raw → 0.75 lb cooked</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <input type="text" id="ingNotes" class="form-input" placeholder="Brand, spec, etc.">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" onclick="saveIngredient()">Save Ingredient</button>
+    <button class="btn btn-sec" onclick="closeModal('ingModal')">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ PACKAGING MODAL ═══════════ -->
+<div class="modal-ov" id="pkgModal">
+<div class="modal">
+  <button class="modal-close" onclick="closeModal('pkgModal')">×</button>
+  <h2 id="pkgModalTitle">Add Packaging</h2>
+  <input type="hidden" id="pkgEditId">
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Name *</label>
+      <input type="text" id="pkgName" class="form-input" placeholder="e.g. 32oz Tray with Lid">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Type</label>
+      <select id="pkgType" class="form-select">
+        <option>Tray</option><option>Tub</option><option>Lid</option><option>Label</option>
+        <option>Bag</option><option>Box</option><option>Jar (glass)</option><option>Jar (plastic)</option>
+        <option>Pouch</option><option>Shrink Band</option><option>Other</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-row-3">
+    <div class="form-group">
+      <label class="form-label">Cost Each ($) *</label>
+      <input type="number" id="pkgCost" class="form-input" placeholder="0.00" step="0.001" min="0">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Size / Description</label>
+      <input type="text" id="pkgSize" class="form-input" placeholder="e.g. 32oz, 8x8 pan">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Supplier</label>
+      <input type="text" id="pkgSupplier" class="form-input" placeholder="e.g. OSC Labels">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" onclick="savePackaging()">Save Packaging</button>
+    <button class="btn btn-sec" onclick="closeModal('pkgModal')">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ RECIPE MODAL ═══════════ -->
+<div class="modal-ov" id="recipeModal">
+<div class="modal" style="max-width:700px">
+  <button class="modal-close" onclick="closeModal('recipeModal')">×</button>
+  <h2 id="recipeModalTitle">Add Recipe</h2>
+  <input type="hidden" id="recipeEditId">
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Recipe Name *</label>
+      <input type="text" id="recipeName" class="form-input" placeholder="e.g. King Ranch Casserole">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <input type="text" id="recipeDesc" class="form-input" placeholder="Brief description">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Batch Yield *</label>
+      <input type="number" id="recipeYield" class="form-input" placeholder="e.g. 6" min="0.01" step="0.01">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Yield Unit</label>
+      <select id="recipeYieldUnit" class="form-select">
+        <option value="servings">servings</option><option value="units">units</option>
+        <option value="lb">lb</option><option value="oz">oz</option>
+        <option value="kg">kg</option><option value="g">g</option>
+        <option value="cups">cups</option><option value="qt">quarts</option><option value="gal">gallons</option>
+        <option value="pans">pans</option><option value="trays">trays</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="sec">Ingredients</div>
+  <div id="recipeIngRows"></div>
+  <button class="btn btn-sec btn-sm" onclick="addIngRow()" style="margin-bottom:14px">+ Add Ingredient</button>
+
+  <div class="sec">Instructions <span style="font-size:10px;font-weight:400;color:var(--muted)">(optional)</span></div>
+  <div id="recipeStepRows"></div>
+  <button class="btn btn-sec btn-sm" onclick="addStepRow()" style="margin-bottom:14px">+ Add Step</button>
+
+  <div class="form-group">
+    <label class="form-label">General Notes</label>
+    <textarea id="recipeNotes" class="form-input" rows="2" placeholder="Storage, reheating, variations..."></textarea>
+  </div>
+
+  <div style="background:var(--parchment);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--muted);margin-bottom:4px">
+    Estimated cost: <strong id="recipeCostPreview" style="font-family:var(--mono);color:var(--ink)">—</strong> per batch
+    &nbsp;·&nbsp; <strong id="recipeUnitCostPreview" style="font-family:var(--mono);color:var(--ink)">—</strong> per unit
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-primary" onclick="saveRecipe()">Save Recipe</button>
+    <button class="btn btn-sec" onclick="closeModal('recipeModal')">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ PRODUCT MODAL ═══════════ -->
+<div class="modal-ov" id="productModal">
+<div class="modal">
+  <button class="modal-close" onclick="closeModal('productModal')">×</button>
+  <h2 id="productModalTitle">Add Product</h2>
+  <input type="hidden" id="productEditId">
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Product Name *</label>
+      <input type="text" id="productName" class="form-input" placeholder="e.g. King Ranch Casserole">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Product Line *</label>
+      <input type="text" id="productLine" class="form-input" placeholder="e.g. Family Flex, Senior Easy, Heat & Eat">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Recipe *</label>
+      <select id="productRecipe" class="form-select" onchange="updateProductCost()">
+        <option value="">— Select recipe —</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Portion / Units per Batch</label>
+      <input type="number" id="productUnits" class="form-input" placeholder="Units per batch" min="1" oninput="updateProductCost()">
+      <div class="form-hint">Leave blank to use recipe batch yield</div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Sale Price ($) *</label>
+      <input type="number" id="productPrice" class="form-input" placeholder="0.00" step="0.01" min="0" oninput="updateProductCost()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Shelf Life</label>
+      <input type="text" id="productShelf" class="form-input" placeholder="e.g. 3 days fresh, 3 months frozen">
+    </div>
+  </div>
+
+  <div class="sec">Packaging <span style="font-size:10px;font-weight:400;color:var(--muted)">(per unit)</span></div>
+  <div id="productPkgRows"></div>
+  <button class="btn btn-sec btn-sm" onclick="addPkgRow()" style="margin-bottom:14px">+ Add Packaging Item</button>
+
+  <div style="background:var(--parchment);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--muted)" id="productCostPreview">
+    Select a recipe and enter sale price to see COGS
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+    <button class="btn btn-sec" onclick="closeModal('productModal')">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ DRIVE SETUP MODAL ═══════════ -->
+<div class="modal-ov" id="setupModal">
+<div class="modal">
+  <button class="modal-close" onclick="closeModal('setupModal')">×</button>
+  <h2>⚙️ One-Time Google Setup</h2>
+  <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px">Takes about 5 minutes. Only needs to be done once — then it auto-syncs forever.</p>
+  <div class="hstep"><div class="hnum">1</div><div class="htxt">Go to <a href="https://console.cloud.google.com" target="_blank" style="color:var(--green)"><strong>console.cloud.google.com</strong></a> and sign in with your Gmail.</div></div>
+  <div class="hstep"><div class="hnum">2</div><div class="htxt">Click <strong>New Project</strong> → name it <strong>Vela Farms Kitchen</strong> → Create.</div></div>
+  <div class="hstep"><div class="hnum">3</div><div class="htxt"><strong>APIs & Services → Library</strong> → search <strong>Google Drive API</strong> → Enable.</div></div>
+  <div class="hstep"><div class="hnum">4</div><div class="htxt"><strong>Credentials → Create → OAuth 2.0 Client ID</strong> → Web application.<br>Under Authorised JavaScript origins add: <code>null</code> and <code>http://localhost</code></div></div>
+  <div class="hstep"><div class="hnum">5</div><div class="htxt">Copy your <strong>Client ID</strong>. Open this HTML file in Notepad, find <code>320008751761-e14mvte8m8iqiaq24tvp1fmnrfsaioi0.apps.googleusercontent.com</code>, paste it in. Save the file.</div></div>
+  <div style="background:var(--parchment);border-radius:7px;padding:9px 13px;font-size:12px;color:var(--muted);margin-top:4px">💡 This is completely free — Google doesn't charge for this.</div>
+  <div class="modal-footer">
+    <a href="https://console.cloud.google.com" target="_blank" class="btn btn-primary" style="text-decoration:none">Open Google Cloud Console</a>
+    <button class="btn btn-sec" onclick="closeModal('setupModal')">Close</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// GOOGLE DRIVE AUTO-SYNC
+// Paste your OAuth Client ID below (see setup instructions)
+// ═══════════════════════════════════════════════════════
+const GDRIVE_CLIENT_ID = '320008751761-e14mvte8m8iqiaq24tvp1fmnrfsaioi0.apps.googleusercontent.com';
+const GDRIVE_SCOPE     = 'https://www.googleapis.com/auth/drive.file';
+const GDRIVE_FILENAME  = 'VelaFarms_KitchenPlanner.json';
+
+let gToken    = null;
+let gFileId   = null;
+let saveTimer = null;
+
+function driveSignIn(){
+  if(GDRIVE_CLIENT_ID==='320008751761-e14mvte8m8iqiaq24tvp1fmnrfsaioi0.apps.googleusercontent.com'){openModal('setupModal');return;}
+  const client=google.accounts.oauth2.initTokenClient({
+    client_id:GDRIVE_CLIENT_ID,scope:GDRIVE_SCOPE,
+    callback:async(resp)=>{
+      if(resp.error){driveStatus('Sign-in failed: '+resp.error,true);return;}
+      gToken=resp.access_token;
+      localStorage.setItem('vf_kitchen_token',gToken);
+      localStorage.setItem('vf_kitchen_expiry',Date.now()+(resp.expires_in-60)*1000);
+      try{
+        const ui=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+gToken}});
+        const ud=await ui.json();
+        localStorage.setItem('vf_kitchen_user',ud.name||ud.email);
+        document.getElementById('driveUserName').textContent='👤 '+(ud.name||ud.email);
+      }catch(e){}
+      document.getElementById('driveSignedOut').style.display='none';
+      document.getElementById('driveSignedIn').style.display='flex';
+      driveStatus('Signed in — loading latest…');
+      const loaded=await driveLoad(false);
+      if(!loaded)await driveSave(false);
+      driveStatus('✓ Synced — auto-saves on every change');
+    }
+  });
+  client.requestAccessToken();
+}
+function driveSignOut(){
+  if(gToken)google.accounts.oauth2.revoke(gToken,()=>{});
+  gToken=null;gFileId=null;
+  ['vf_kitchen_token','vf_kitchen_expiry','vf_kitchen_fileid','vf_kitchen_user'].forEach(k=>localStorage.removeItem(k));
+  document.getElementById('driveSignedOut').style.display='flex';
+  document.getElementById('driveSignedIn').style.display='none';
+}
+async function driveRestoreSession(){
+  if(GDRIVE_CLIENT_ID==='320008751761-e14mvte8m8iqiaq24tvp1fmnrfsaioi0.apps.googleusercontent.com')return;
+  const token=localStorage.getItem('vf_kitchen_token');
+  const expiry=parseInt(localStorage.getItem('vf_kitchen_expiry')||'0');
+  const user=localStorage.getItem('vf_kitchen_user');
+  if(!token||Date.now()>expiry)return;
+  gToken=token;gFileId=localStorage.getItem('vf_kitchen_fileid')||null;
+  if(user)document.getElementById('driveUserName').textContent='👤 '+user;
+  document.getElementById('driveSignedOut').style.display='none';
+  document.getElementById('driveSignedIn').style.display='flex';
+  driveStatus('Reconnecting…');
+  const loaded=await driveLoad(false);
+  if(!loaded)await driveSave(false);
+  driveStatus('✓ Synced '+new Date().toLocaleTimeString());
+}
+async function driveEnsureFile(){
+  if(gFileId)return gFileId;
+  const q=encodeURIComponent(`name='${GDRIVE_FILENAME}' and trashed=false`);
+  const res=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`,{headers:{Authorization:'Bearer '+gToken}});
+  const data=await res.json();
+  if(data.files&&data.files.length>0){gFileId=data.files[0].id;localStorage.setItem('vf_kitchen_fileid',gFileId);return gFileId;}
+  const meta=await fetch('https://www.googleapis.com/drive/v3/files',{method:'POST',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({name:GDRIVE_FILENAME,mimeType:'application/json'})});
+  const file=await meta.json();gFileId=file.id;localStorage.setItem('vf_kitchen_fileid',gFileId);return gFileId;
+}
+async function driveSave(showFeedback=true){
+  if(!gToken)return;
+  try{
+    if(showFeedback)driveStatus('Saving…');
+    const fid=await driveEnsureFile();
+    const form=new FormData();
+    form.append('metadata',new Blob([JSON.stringify({name:GDRIVE_FILENAME})],{type:'application/json'}));
+    form.append('file',new Blob([JSON.stringify(D,null,2)],{type:'application/json'}));
+    await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fid}?uploadType=multipart`,{method:'PATCH',headers:{Authorization:'Bearer '+gToken},body:form});
+    localStorage.setItem(STORE_KEY,JSON.stringify(D));
+    driveStatus('✓ Saved '+new Date().toLocaleTimeString());
+    showSavePill();
+  }catch(e){driveStatus('⚠ Save failed',true);}
+}
+async function driveLoad(showFeedback=true){
+  if(!gToken)return false;
+  try{
+    if(showFeedback)driveStatus('Loading…');
+    const fid=await driveEnsureFile();
+    const res=await fetch(`https://www.googleapis.com/drive/v3/files/${fid}?alt=media`,{headers:{Authorization:'Bearer '+gToken}});
+    if(!res.ok)return false;
+    const text=await res.text();
+    if(!text||text.trim()==='')return false;
+    D=JSON.parse(text);
+    localStorage.setItem(STORE_KEY,JSON.stringify(D));
+    renderAll();
+    driveStatus('✓ Loaded '+new Date().toLocaleTimeString());
+    return true;
+  }catch(e){return false;}
+}
+function triggerAutoSave(){
+  if(!gToken)return;
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>driveSave(false),1500);
+}
+function driveStatus(msg,isError=false){
+  const el=document.getElementById('driveStatus');
+  if(el){el.textContent=msg;el.style.color=isError?'#F4A0A0':'rgba(255,255,255,.45)';}
+}
+
+// ═══════════════════════════════════════════════════════
+// DATA STORE
+// ═══════════════════════════════════════════════════════
+const STORE_KEY='vf_kitchen_v1';
+let D={ingredients:[],packaging:[],recipes:[],products:[]};
+
+function loadData(){
+  try{const s=localStorage.getItem(STORE_KEY);if(s)D=JSON.parse(s);}catch(e){}
+}
+function saveData(){
+  try{
+    localStorage.setItem(STORE_KEY,JSON.stringify(D));
+    showSavePill();
+    triggerAutoSave();
+  }catch(e){}
+}
+function showSavePill(){
+  const p=document.getElementById('si');p.classList.add('show');setTimeout(()=>p.classList.remove('show'),2000);
+}
+function confirmReset(){
+  if(confirm('Clear ALL data — ingredients, recipes, and products? This cannot be undone.')){
+    D={ingredients:[],packaging:[],recipes:[],products:[]};
+    saveData();renderAll();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════
+const uid=()=>Math.random().toString(36).slice(2,10);
+const $=id=>document.getElementById(id);
+const fmt$=n=>'$'+(+n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const pct=n=>((+n||0)*100).toFixed(1)+'%';
+
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');}));
+
+function showTab(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  if(id==='products')renderProducts();
+  if(id==='planner')renderPlanner();
+}
+
+// ═══════════════════════════════════════════════════════
+// INGREDIENTS
+// ═══════════════════════════════════════════════════════
+function openIngModal(id){
+  $('ingModalTitle').textContent=id?'Edit Ingredient':'Add Ingredient';
+  $('ingEditId').value=id||'';
+  if(id){
+    const ing=D.ingredients.find(i=>i.id===id)||{};
+    $('ingName').value=ing.name||'';$('ingUnit').value=ing.unit||'lb';
+    $('ingCost').value=ing.cost||'';$('ingCat').value=ing.cat||'';
+    $('ingSupplier').value=ing.supplier||'';$('ingNotes').value=ing.notes||'';
+    $('ingCookLoss').value=ing.cookLoss||'';
+  } else {
+    ['ingName','ingCost','ingCat','ingSupplier','ingNotes','ingCookLoss'].forEach(f=>$(f).value='');
+    $('ingUnit').value='lb';
+  }
+  openModal('ingModal');
+}
+function saveIngredient(){
+  const name=$('ingName').value.trim();
+  const cost=parseFloat($('ingCost').value);
+  if(!name){alert('Ingredient name is required');return;}
+  if(isNaN(cost)||cost<0){alert('Enter a valid cost');return;}
+  const id=$('ingEditId').value||uid();
+  const obj={id,name,unit:$('ingUnit').value,cost,cat:$('ingCat').value.trim(),
+    supplier:$('ingSupplier').value.trim(),notes:$('ingNotes').value.trim(),
+    cookLoss:parseFloat($('ingCookLoss').value)||0};
+  const idx=D.ingredients.findIndex(i=>i.id===id);
+  if(idx>=0)D.ingredients[idx]=obj;else D.ingredients.push(obj);
+  saveData();renderIngredients();closeModal('ingModal');
+}
+function deleteIngredient(id){
+  if(!confirm('Delete this ingredient?'))return;
+  D.ingredients=D.ingredients.filter(i=>i.id!==id);
+  saveData();renderIngredients();
+}
+function renderIngredients(){
+  const tbody=$('ingTable');
+  if(!D.ingredients.length){
+    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted);font-style:italic">No ingredients yet — click + Add Ingredient</td></tr>';return;
+  }
+  const sorted=[...D.ingredients].sort((a,b)=>(a.cat||'').localeCompare(b.cat||'')||(a.name||'').localeCompare(b.name||''));
+  let html='',lastCat='';
+  sorted.forEach(ing=>{
+    if(ing.cat&&ing.cat!==lastCat){
+      html+=`<tr><td colspan="7" style="background:var(--parchment);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:6px 12px">${ing.cat}</td></tr>`;
+      lastCat=ing.cat;
+    }
+    const cooked=ing.cookLoss>0?`<span style="font-size:11px;color:var(--amber)">${(100-ing.cookLoss).toFixed(0)}% yield</span>`:'—';
+    html+=`<tr>
+      <td style="font-weight:500">${ing.name}</td>
+      <td><span class="badge badge-gray">${ing.unit}</span></td>
+      <td style="font-family:var(--mono);font-weight:600">${fmt$(ing.cost)}</td>
+      <td>${cooked}</td>
+      <td style="font-size:11px;color:var(--muted)">${ing.cat||'—'}</td>
+      <td style="font-size:11px;color:var(--muted)">${ing.supplier||'—'}</td>
+      <td><div class="tbl-actions">
+        <button class="btn btn-sec btn-sm" onclick="openIngModal('${ing.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteIngredient('${ing.id}')">×</button>
+      </div></td>
+    </tr>`;
+  });
+  tbody.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════════
+// PACKAGING
+// ═══════════════════════════════════════════════════════
+function openPkgModal(id){
+  $('pkgModalTitle').textContent=id?'Edit Packaging':'Add Packaging';
+  $('pkgEditId').value=id||'';
+  if(id){
+    const p=D.packaging.find(p=>p.id===id)||{};
+    $('pkgName').value=p.name||'';$('pkgType').value=p.type||'Tray';
+    $('pkgCost').value=p.cost||'';$('pkgSize').value=p.size||'';
+    $('pkgSupplier').value=p.supplier||'';
+  } else {
+    ['pkgName','pkgCost','pkgSize','pkgSupplier'].forEach(f=>$(f).value='');
+    $('pkgType').value='Tray';
+  }
+  openModal('pkgModal');
+}
+function savePackaging(){
+  const name=$('pkgName').value.trim();
+  const cost=parseFloat($('pkgCost').value);
+  if(!name){alert('Name is required');return;}
+  if(isNaN(cost)||cost<0){alert('Enter a valid cost');return;}
+  const id=$('pkgEditId').value||uid();
+  const obj={id,name,type:$('pkgType').value,cost,size:$('pkgSize').value.trim(),supplier:$('pkgSupplier').value.trim()};
+  const idx=D.packaging.findIndex(p=>p.id===id);
+  if(idx>=0)D.packaging[idx]=obj;else D.packaging.push(obj);
+  saveData();renderPackaging();closeModal('pkgModal');
+}
+function deletePackaging(id){
+  if(!confirm('Delete this packaging?'))return;
+  D.packaging=D.packaging.filter(p=>p.id!==id);
+  saveData();renderPackaging();
+}
+function renderPackaging(){
+  const tbody=$('pkgTable');
+  if(!D.packaging.length){
+    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted);font-style:italic">No packaging yet</td></tr>';return;
+  }
+  tbody.innerHTML=D.packaging.map(p=>`<tr>
+    <td style="font-weight:500">${p.name}</td>
+    <td><span class="badge badge-blue">${p.type}</span></td>
+    <td style="font-size:12px;color:var(--muted)">${p.size||'—'}</td>
+    <td style="font-family:var(--mono);font-weight:600">${fmt$(p.cost)}</td>
+    <td style="font-size:12px;color:var(--muted)">${p.supplier||'—'}</td>
+    <td><div class="tbl-actions">
+      <button class="btn btn-sec btn-sm" onclick="openPkgModal('${p.id}')">Edit</button>
+      <button class="btn btn-danger btn-sm" onclick="deletePackaging('${p.id}')">×</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// RECIPES
+// ═══════════════════════════════════════════════════════
+let recipeIngRows=[];
+let recipeStepRows=[];
+
+function openRecipeModal(id){
+  recipeIngRows=[];recipeStepRows=[];
+  $('recipeModalTitle').textContent=id?'Edit Recipe':'Add Recipe';
+  $('recipeEditId').value=id||'';
+  if(id){
+    const r=D.recipes.find(r=>r.id===id)||{};
+    $('recipeName').value=r.name||'';$('recipeDesc').value=r.desc||'';
+    $('recipeYield').value=r.yield||'';$('recipeYieldUnit').value=r.yieldUnit||'servings';
+    $('recipeNotes').value=r.notes||'';
+    recipeIngRows=(r.ingredients||[]).map(i=>({...i}));
+    recipeStepRows=(r.steps||[]).map(s=>({...s}));
+  } else {
+    ['recipeName','recipeDesc','recipeYield','recipeNotes'].forEach(f=>$(f).value='');
+    $('recipeYieldUnit').value='servings';
+  }
+  renderRecipeIngRows();renderRecipeStepRows();updateRecipeCostPreview();
+  openModal('recipeModal');
+}
+function addIngRow(){
+  recipeIngRows.push({ingId:'',qty:'',unit:''});
+  renderRecipeIngRows();
+}
+function removeIngRow(i){recipeIngRows.splice(i,1);renderRecipeIngRows();updateRecipeCostPreview();}
+function renderRecipeIngRows(){
+  const opts=D.ingredients.map(i=>`<option value="${i.id}">${i.name} (${i.unit})</option>`).join('');
+  $('recipeIngRows').innerHTML=recipeIngRows.map((row,i)=>`
+    <div class="ing-row">
+      <select onchange="recipeIngRows[${i}].ingId=this.value;updateRecipeCostPreview()">
+        <option value="">— Select ingredient —</option>${opts.replace(`value="${row.ingId}"`,`value="${row.ingId}" selected`)}
+      </select>
+      <input type="number" placeholder="Qty" min="0" step="0.01" value="${row.qty||''}"
+        onchange="recipeIngRows[${i}].qty=parseFloat(this.value)||0;updateRecipeCostPreview()">
+      <input type="text" placeholder="unit" value="${row.unit||''}"
+        onchange="recipeIngRows[${i}].unit=this.value">
+      <button class="btn btn-danger btn-sm" onclick="removeIngRow(${i})" style="padding:4px 8px">×</button>
+    </div>`).join('');
+}
+function addStepRow(){recipeStepRows.push({text:''});renderRecipeStepRows();}
+function removeStepRow(i){recipeStepRows.splice(i,1);renderRecipeStepRows();}
+function renderRecipeStepRows(){
+  $('recipeStepRows').innerHTML=recipeStepRows.map((s,i)=>`
+    <div class="step-row">
+      <div class="step-num">${i+1}</div>
+      <textarea placeholder="Step ${i+1} instructions..." onchange="recipeStepRows[${i}].text=this.value">${s.text||''}</textarea>
+      <button class="btn btn-danger btn-sm" onclick="removeStepRow(${i})" style="padding:4px 8px;margin-top:6px">×</button>
+    </div>`).join('');
+}
+function calcRecipeCost(ingredients){
+  return (ingredients||[]).reduce((tot,row)=>{
+    const ing=D.ingredients.find(i=>i.id===row.ingId);
+    if(!ing||!row.qty)return tot;
+    const costPerUnit=ing.cookLoss>0?ing.cost/(1-ing.cookLoss/100):ing.cost;
+    return tot+costPerUnit*(row.qty||0);
+  },0);
+}
+function updateRecipeCostPreview(){
+  const batchCost=calcRecipeCost(recipeIngRows);
+  const y=parseFloat($('recipeYield').value)||1;
+  $('recipeCostPreview').textContent=fmt$(batchCost)+' batch';
+  $('recipeUnitCostPreview').textContent=fmt$(batchCost/y)+' / unit';
+}
+function saveRecipe(){
+  const name=$('recipeName').value.trim();
+  const y=parseFloat($('recipeYield').value);
+  if(!name){alert('Recipe name is required');return;}
+  if(!y||y<=0){alert('Enter batch yield (e.g. 6 servings)');return;}
+  const id=$('recipeEditId').value||uid();
+  const obj={id,name,desc:$('recipeDesc').value.trim(),yield:y,yieldUnit:$('recipeYieldUnit').value,
+    notes:$('recipeNotes').value.trim(),
+    ingredients:recipeIngRows.filter(r=>r.ingId&&r.qty),
+    steps:recipeStepRows.filter(s=>s.text)};
+  const idx=D.recipes.findIndex(r=>r.id===id);
+  if(idx>=0)D.recipes[idx]=obj;else D.recipes.push(obj);
+  saveData();renderRecipes();closeModal('recipeModal');
+}
+function deleteRecipe(id){
+  if(!confirm('Delete this recipe?'))return;
+  D.recipes=D.recipes.filter(r=>r.id!==id);
+  saveData();renderRecipes();
+}
+function renderRecipes(){
+  const el=$('recipeCards');
+  if(!D.recipes.length){
+    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-style:italic;background:white;border:1px solid var(--border);border-radius:var(--r)">No recipes yet — click + Add Recipe</div>';return;
+  }
+  el.innerHTML=D.recipes.map(r=>{
+    const batchCost=calcRecipeCost(r.ingredients);
+    const unitCost=batchCost/(r.yield||1);
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div>
+          <div style="font-size:14px;font-weight:600">${r.name}</div>
+          ${r.desc?`<div style="font-size:11px;color:var(--muted);margin-top:2px">${r.desc}</div>`:''}
+        </div>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-sec btn-sm" onclick="openRecipeModal('${r.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRecipe('${r.id}')">×</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px;margin-bottom:8px">
+        <span>Yield: <strong>${r.yield} ${r.yieldUnit}</strong></span>
+        <span>Batch cost: <strong style="font-family:var(--mono)">${fmt$(batchCost)}</strong></span>
+        <span>Per unit: <strong style="font-family:var(--mono);color:var(--green)">${fmt$(unitCost)}</strong></span>
+      </div>
+      ${r.ingredients&&r.ingredients.length?`
+        <div style="font-size:11px;color:var(--muted);border-top:1px solid var(--border);padding-top:8px">
+          ${r.ingredients.map(row=>{
+            const ing=D.ingredients.find(i=>i.id===row.ingId);
+            return ing?`<span style="margin-right:10px">${row.qty} ${row.unit||ing.unit} ${ing.name}</span>`:'';
+          }).join('')}
+        </div>`:''}
+      ${r.notes?`<div style="font-size:11px;color:var(--muted);margin-top:6px;font-style:italic">${r.notes}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// PRODUCTS
+// ═══════════════════════════════════════════════════════
+let productPkgRows=[];
+
+function openProductModal(id){
+  productPkgRows=[];
+  $('productModalTitle').textContent=id?'Edit Product':'Add Product';
+  $('productEditId').value=id||'';
+  // populate recipe dropdown
+  const opts='<option value="">— Select recipe —</option>'+D.recipes.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+  $('productRecipe').innerHTML=opts;
+  if(id){
+    const p=D.products.find(p=>p.id===id)||{};
+    $('productName').value=p.name||'';$('productLine').value=p.line||'';
+    $('productRecipe').value=p.recipeId||'';$('productUnits').value=p.units||'';
+    $('productPrice').value=p.price||'';$('productShelf').value=p.shelf||'';
+    productPkgRows=(p.packaging||[]).map(pk=>({...pk}));
+  } else {
+    ['productName','productLine','productUnits','productPrice','productShelf'].forEach(f=>$(f).value='');
+  }
+  renderProductPkgRows();updateProductCost();
+  openModal('productModal');
+}
+function addPkgRow(){productPkgRows.push({pkgId:'',qty:1});renderProductPkgRows();}
+function removeProductPkgRow(i){productPkgRows.splice(i,1);renderProductPkgRows();updateProductCost();}
+function renderProductPkgRows(){
+  const opts=D.packaging.map(p=>`<option value="${p.id}">${p.name} (${fmt$(p.cost)})</option>`).join('');
+  $('productPkgRows').innerHTML=productPkgRows.map((row,i)=>`
+    <div class="ing-row">
+      <select onchange="productPkgRows[${i}].pkgId=this.value;updateProductCost()">
+        <option value="">— Select packaging —</option>${opts.replace(`value="${row.pkgId}"`,`value="${row.pkgId}" selected`)}
+      </select>
+      <input type="number" placeholder="Qty" min="1" value="${row.qty||1}" style="width:70px"
+        onchange="productPkgRows[${i}].qty=parseInt(this.value)||1;updateProductCost()">
+      <span></span>
+      <button class="btn btn-danger btn-sm" onclick="removeProductPkgRow(${i})" style="padding:4px 8px">×</button>
+    </div>`).join('');
+}
+function getProductCost(recipeId,units,pkgRows){
+  const recipe=D.recipes.find(r=>r.id===recipeId);
+  if(!recipe)return{recipeCost:0,pkgCost:0,total:0,perUnit:0};
+  const batchCost=calcRecipeCost(recipe.ingredients);
+  const numUnits=units||recipe.yield||1;
+  const recipeCost=batchCost/numUnits;
+  const pkgCost=(pkgRows||[]).reduce((tot,row)=>{
+    const pkg=D.packaging.find(p=>p.id===row.pkgId);
+    return tot+(pkg?pkg.cost*(row.qty||1):0);
+  },0);
+  return{recipeCost,pkgCost,total:recipeCost+pkgCost,perUnit:recipeCost+pkgCost};
+}
+function updateProductCost(){
+  const recipeId=$('productRecipe').value;
+  const units=parseFloat($('productUnits').value)||null;
+  const price=parseFloat($('productPrice').value)||0;
+  const {total}=getProductCost(recipeId,units,productPkgRows);
+  const cogsRatio=price>0?total/price:0;
+  const cogsClass=cogsRatio<0.3?'cogs-great':cogsRatio<0.4?'cogs-ok':'cogs-high';
+  const profit=price-total;
+  $('productCostPreview').innerHTML=recipeId&&price?
+    `<span>Ingredient cost: <strong style="font-family:var(--mono)">${fmt$(total)}</strong></span> &nbsp;·&nbsp;
+     <span>Sale price: <strong style="font-family:var(--mono)">${fmt$(price)}</strong></span> &nbsp;·&nbsp;
+     <span>Profit: <strong style="font-family:var(--mono);color:${profit>0?'var(--green)':'var(--red)'}">${fmt$(profit)}</strong></span> &nbsp;·&nbsp;
+     <span>COGS: <strong class="${cogsClass}">${pct(cogsRatio)}</strong></span>`:
+    'Select a recipe and enter sale price to see COGS';
+}
+function saveProduct(){
+  const name=$('productName').value.trim();
+  const price=parseFloat($('productPrice').value);
+  const recipeId=$('productRecipe').value;
+  if(!name){alert('Product name is required');return;}
+  if(!recipeId){alert('Select a recipe');return;}
+  if(isNaN(price)||price<=0){alert('Enter a valid sale price');return;}
+  const id=$('productEditId').value||uid();
+  const units=parseFloat($('productUnits').value)||null;
+  const obj={id,name,line:$('productLine').value.trim(),recipeId,units,price,
+    shelf:$('productShelf').value.trim(),
+    packaging:productPkgRows.filter(r=>r.pkgId)};
+  const idx=D.products.findIndex(p=>p.id===id);
+  if(idx>=0)D.products[idx]=obj;else D.products.push(obj);
+  saveData();renderProducts();closeModal('productModal');
+}
+function deleteProduct(id){
+  if(!confirm('Delete this product?'))return;
+  D.products=D.products.filter(p=>p.id!==id);
+  saveData();renderProducts();
+}
+function renderProducts(){
+  const sort=$('productSort').value;
+  let prods=[...D.products].map(p=>{
+    const r=D.recipes.find(r=>r.id===p.recipeId);
+    const {total}=getProductCost(p.recipeId,p.units,p.packaging);
+    const cogs=p.price>0?total/p.price:0;
+    const profit=p.price-total;
+    return{...p,recipeName:r?r.name:'—',cost:total,cogs,profit};
+  });
+  if(sort==='line')prods.sort((a,b)=>(a.line||'').localeCompare(b.line||'')||(a.name||'').localeCompare(b.name||''));
+  else if(sort==='cogs_asc')prods.sort((a,b)=>a.cogs-b.cogs);
+  else if(sort==='cogs_desc')prods.sort((a,b)=>b.cogs-a.cogs);
+  else if(sort==='profit_desc')prods.sort((a,b)=>b.profit-a.profit);
+  else if(sort==='name')prods.sort((a,b)=>a.name.localeCompare(b.name));
+
+  // KPIs
+  if(prods.length){
+    const avgCogs=prods.reduce((a,p)=>a+p.cogs,0)/prods.length;
+    const avgProfit=prods.reduce((a,p)=>a+p.profit,0)/prods.length;
+    const topProfit=prods.reduce((a,p)=>p.profit>a.profit?p:a,prods[0]);
+    $('productKpis').innerHTML=`
+      <div class="kpi"><div class="kpi-label">Products</div><div class="kpi-val">${prods.length}</div></div>
+      <div class="kpi ${avgCogs>0.4?'':''}"><div class="kpi-label">Avg COGS %</div><div class="kpi-val ${avgCogs<0.3?'g':avgCogs<0.4?'a':'r'}">${pct(avgCogs)}</div><div class="kpi-sub">target under 35%</div></div>
+      <div class="kpi"><div class="kpi-label">Avg Profit / Unit</div><div class="kpi-val g">${fmt$(avgProfit)}</div></div>
+      <div class="kpi"><div class="kpi-label">Top Earner</div><div class="kpi-val" style="font-size:14px;font-weight:600">${topProfit.name}</div><div class="kpi-sub">${fmt$(topProfit.profit)} profit / unit</div></div>`;
+  } else {$('productKpis').innerHTML='';}
+
+  const tbody=$('productTable');
+  if(!prods.length){
+    tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted);font-style:italic">No products yet</td></tr>';return;
+  }
+  let html='',lastLine='';
+  prods.forEach(p=>{
+    if((sort==='line')&&p.line&&p.line!==lastLine){
+      html+=`<tr><td colspan="9" style="background:var(--parchment);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:6px 12px">${p.line}</td></tr>`;
+      lastLine=p.line;
+    }
+    const cogsClass=p.cogs<0.3?'cogs-great':p.cogs<0.4?'cogs-ok':'cogs-high';
+    html+=`<tr>
+      <td style="font-weight:500">${p.name}</td>
+      <td><span class="badge badge-green" style="font-size:10px">${p.line||'—'}</span></td>
+      <td style="font-size:12px;color:var(--muted)">${p.recipeName}</td>
+      <td style="font-family:var(--mono);font-weight:600">${fmt$(p.price)}</td>
+      <td style="font-family:var(--mono)">${p.cost>0?fmt$(p.cost):'—'}</td>
+      <td style="font-family:var(--mono);color:${p.profit>0?'var(--green)':'var(--red)'};font-weight:600">${p.cost>0?fmt$(p.profit):'—'}</td>
+      <td><span class="${p.cost>0?cogsClass:''}">${p.cost>0?pct(p.cogs):'—'}</span></td>
+      <td style="font-size:11px;color:var(--muted)">${p.shelf||'—'}</td>
+      <td><div class="tbl-actions">
+        <button class="btn btn-sec btn-sm" onclick="openProductModal('${p.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')">×</button>
+      </div></td>
+    </tr>`;
+  });
+  tbody.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════════
+// PRODUCTION PLANNER
+// ═══════════════════════════════════════════════════════
+function renderPlanner(){
+  const products=D.products;
+  if(!products.length){
+    $('plannerCards').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-style:italic;background:white;border:1px solid var(--border);border-radius:var(--r);grid-column:1/-1">Add products first — they\'ll appear here for scheduling</div>';
+    $('shoppingList').innerHTML='';
+    $('plannerKpis').innerHTML='';
+    return;
+  }
+  // Group by line
+  const lines=[...new Set(products.map(p=>p.line||'Other'))].sort();
+  let html='';
+  lines.forEach(line=>{
+    const lineProds=products.filter(p=>(p.line||'Other')===line);
+    lineProds.forEach(p=>{
+      const qtyKey='plan_'+p.id;
+      const qty=parseInt(localStorage.getItem(qtyKey))||0;
+      const r=D.recipes.find(r=>r.id===p.recipeId);
+      const {total}=getProductCost(p.recipeId,p.units,p.packaging);
+      html+=`<div class="prod-card">
+        <div class="prod-card-name">${p.name}</div>
+        <div class="prod-card-line">${line}${r?' · '+r.yield+' '+r.yieldUnit+' / batch':''}</div>
+        <div class="prod-card-row">
+          <span style="color:var(--muted);font-size:11px">Units to make:</span>
+          <div style="display:flex;align-items:center;gap:4px">
+            <button class="qty-btn" onclick="adjustQty('${p.id}',-1)">−</button>
+            <input class="qty-input" type="number" id="${qtyKey}" value="${qty}" min="0"
+              onchange="setPlanQty('${p.id}',this.value)">
+            <button class="qty-btn" onclick="adjustQty('${p.id}',1)">+</button>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);display:flex;justify-content:space-between;margin-top:4px">
+          <span>Cost/unit: <strong style="font-family:var(--mono)">${total>0?fmt$(total):'enter recipe'}</strong></span>
+          <span id="planCost_${p.id}" style="font-weight:600;color:var(--green)">${qty>0&&total>0?fmt$(qty*total):''}</span>
+        </div>
+      </div>`;
+    });
+  });
+  $('plannerCards').innerHTML=html;
+  updatePlannerTotals();
+}
+function adjustQty(productId,delta){
+  const key='plan_'+productId;
+  const el=$(key);
+  if(!el)return;
+  const newVal=Math.max(0,(parseInt(el.value)||0)+delta);
+  el.value=newVal;
+  setPlanQty(productId,newVal);
+}
+function setPlanQty(productId,val){
+  const key='plan_'+productId;
+  const qty=Math.max(0,parseInt(val)||0);
+  localStorage.setItem(key,qty);
+  // update inline cost
+  const p=D.products.find(p=>p.id===productId);
+  if(p){
+    const {total}=getProductCost(p.recipeId,p.units,p.packaging);
+    const costEl=$('planCost_'+productId);
+    if(costEl)costEl.textContent=qty>0&&total>0?fmt$(qty*total):'';
+  }
+  updatePlannerTotals();
+}
+function clearPlanner(){
+  if(!confirm('Clear all production quantities?'))return;
+  D.products.forEach(p=>localStorage.removeItem('plan_'+p.id));
+  renderPlanner();
+}
+function updatePlannerTotals(){
+  // Build ingredient totals
+  const ingTotals={};
+  const pkgTotals={};
+  let totalIngCost=0,totalPkgCost=0,totalUnits=0;
+
+  D.products.forEach(p=>{
+    const qty=parseInt(localStorage.getItem('plan_'+p.id))||0;
+    if(!qty)return;
+    totalUnits+=qty;
+    const r=D.recipes.find(r=>r.id===p.recipeId);
+    if(r){
+      const unitsPerBatch=p.units||r.yield||1;
+      const batches=qty/unitsPerBatch;
+      r.ingredients.forEach(row=>{
+        const ing=D.ingredients.find(i=>i.id===row.ingId);
+        if(!ing||!row.qty)return;
+        const totalQty=(row.qty||0)*batches;
+        const cost=(ing.cookLoss>0?ing.cost/(1-ing.cookLoss/100):ing.cost)*totalQty;
+        if(!ingTotals[ing.id])ingTotals[ing.id]={name:ing.name,unit:ing.unit,qty:0,cost:0,supplier:ing.supplier||'',cat:ing.cat||''};
+        ingTotals[ing.id].qty+=totalQty;
+        ingTotals[ing.id].cost+=cost;
+        totalIngCost+=cost;
+      });
+    }
+    (p.packaging||[]).forEach(row=>{
+      const pkg=D.packaging.find(pk=>pk.id===row.pkgId);
+      if(!pkg)return;
+      const totalQty=(row.qty||1)*qty;
+      const cost=pkg.cost*totalQty;
+      if(!pkgTotals[pkg.id])pkgTotals[pkg.id]={name:pkg.name,qty:0,cost:0,supplier:pkg.supplier||''};
+      pkgTotals[pkg.id].qty+=totalQty;
+      pkgTotals[pkg.id].cost+=cost;
+      totalPkgCost+=cost;
+    });
+  });
+
+  // KPIs
+  $('plannerKpis').innerHTML=totalUnits>0?`
+    <div class="kpi"><div class="kpi-label">Total Units</div><div class="kpi-val">${totalUnits}</div></div>
+    <div class="kpi"><div class="kpi-label">Ingredient Cost</div><div class="kpi-val a">${fmt$(totalIngCost)}</div></div>
+    <div class="kpi"><div class="kpi-label">Packaging Cost</div><div class="kpi-val a">${fmt$(totalPkgCost)}</div></div>
+    <div class="kpi"><div class="kpi-label">Total Production Cost</div><div class="kpi-val r">${fmt$(totalIngCost+totalPkgCost)}</div></div>
+    <div class="kpi"><div class="kpi-label">Cost per Unit Avg</div><div class="kpi-val">${fmt$((totalIngCost+totalPkgCost)/totalUnits)}</div></div>
+  `:'';
+
+  if(!totalUnits){
+    $('shoppingList').innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);font-style:italic;background:white;border:1px solid var(--border);border-radius:var(--r)">Set production quantities above to generate your shopping list</div>';
+    return;
+  }
+
+  // Shopping list grouped by category/supplier
+  const ings=Object.values(ingTotals).sort((a,b)=>(a.cat||'').localeCompare(b.cat||'')||(a.name||'').localeCompare(b.name||''));
+  const pkgs=Object.values(pkgTotals);
+
+  let html='';
+  if(ings.length){
+    html+='<div class="shop-section"><div class="sec">Ingredients needed</div>';
+    let lastCat='';
+    ings.forEach(ing=>{
+      if(ing.cat&&ing.cat!==lastCat){
+        html+=`<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:8px 12px 3px">${ing.cat}</div>`;
+        lastCat=ing.cat;
+      }
+      html+=`<div class="shop-item">
+        <span><strong>${ing.name}</strong>${ing.supplier?` <span style="color:var(--muted);font-size:11px">· ${ing.supplier}</span>`:''}</span>
+        <span style="display:flex;gap:16px;align-items:center">
+          <span style="font-family:var(--mono);font-weight:600">${ing.qty%1===0?ing.qty:ing.qty.toFixed(2)} ${ing.unit}</span>
+          <span style="font-family:var(--mono);color:var(--muted);font-size:11px">${fmt$(ing.cost)}</span>
+        </span>
+      </div>`;
+    });
+    html+='</div>';
+  }
+  if(pkgs.length){
+    html+='<div class="shop-section"><div class="sec">Packaging needed</div>';
+    pkgs.forEach(pkg=>{
+      html+=`<div class="shop-item">
+        <span><strong>${pkg.name}</strong>${pkg.supplier?` <span style="color:var(--muted);font-size:11px">· ${pkg.supplier}</span>`:''}</span>
+        <span style="display:flex;gap:16px;align-items:center">
+          <span style="font-family:var(--mono);font-weight:600">${pkg.qty} units</span>
+          <span style="font-family:var(--mono);color:var(--muted);font-size:11px">${fmt$(pkg.cost)}</span>
+        </span>
+      </div>`;
+    });
+    html+='</div>';
+  }
+  html+=`<div class="shop-total">
+    <span>Total Production Cost — Week of ${$('plannerWeek').value||'(enter week above)'}</span>
+    <span style="font-family:var(--mono);font-size:18px">${fmt$(totalIngCost+totalPkgCost)}</span>
+  </div>`;
+  $('shoppingList').innerHTML=html;
+}
+
+function printPlanner(){window.print();}
+
+// ═══════════════════════════════════════════════════════
+// RENDER ALL
+// ═══════════════════════════════════════════════════════
+function renderAll(){
+  renderIngredients();
+  renderPackaging();
+  renderRecipes();
+  renderProducts();
+  renderPlanner();
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+loadData();
+renderAll();
+driveRestoreSession();
+</script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</body>
+</html>
