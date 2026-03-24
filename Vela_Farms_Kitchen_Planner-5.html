@@ -1949,7 +1949,7 @@ function renderRecipes() {
           </span>`;
         }).join('')}
       </div>` : ''}
-      ${rec.notes ? `<div style="margin-top:8px;font-size:12px;color:var(--muted);font-style:italic">${esc(rec.notes)}</div>` : ''}
+      (rec.notes ? '<div style="margin-top:8px;font-size:12px;color:var(--muted);font-style:italic">' + esc(rec.notes) + '</div>' : '')
       `}
     </div>`;
   }).join('');
