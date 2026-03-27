@@ -1907,7 +1907,7 @@ function renderRecipes() {
             <td style="padding:7px 10px;font-family:var(--mono)">$${batchCost.toFixed(2)}</td>
           </tr></tfoot>
         </table>
-      </div>` : ''}
+      '</div>' : '')
       ${(() => {
         const linked = state.products.filter(p => p.recipeId === rec.id);
         if (!linked.length) return '';
